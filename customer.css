@@ -490,6 +490,18 @@
   padding: 0.4rem var(--space-md);
 }
 
+.add-btn-disabled,
+.add-btn-disabled:hover,
+.add-btn-disabled:active {
+  cursor: not-allowed;
+  background: #e5e7eb !important;
+  border-color: #d1d5db !important;
+  color: #6b7280 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+}
+
 .out-of-stock-badge {
   position: absolute;
   top: 0;
@@ -1590,4 +1602,12 @@ body:not(.light-theme) .sticky-cart-count,
 body:not(.light-theme) .sticky-cart-total,
 body:not(.light-theme) .sticky-cart-view {
   color: #ffffff !important;
+}
+
+body:not(.light-theme) .add-btn-disabled,
+body:not(.light-theme) .add-btn-disabled:hover,
+body:not(.light-theme) .add-btn-disabled:active {
+  background: #27272a !important;
+  border-color: #3f3f46 !important;
+  color: #a1a1aa !important;
 }

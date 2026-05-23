@@ -139,15 +139,15 @@ function loadBrandCustomization() {
     statusBadge.innerText = "Open";
     statusBadge.className = "status-badge status-open";
     closedScreen.style.display = "none";
-    productsContainer.style.display = "flex";
+    productsContainer.style.display = "grid";
     announcementsSection.style.display = "block";
   } else {
     statusBadge.innerText = "Closed";
     statusBadge.className = "status-badge status-closed";
     closedScreen.style.display = "flex";
     closedMsg.innerText = settings.closedMessage || "Kitchen is currently closed.";
-    productsContainer.style.display = "none";
-    announcementsSection.style.display = "none";
+    productsContainer.style.display = "grid";
+    announcementsSection.style.display = "block";
   }
 
   refreshCheckoutUpiDetails(settings);
@@ -291,6 +291,8 @@ function renderProducts() {
   const container = document.getElementById("menu-products-container");
   if (!container) return;
   
+  const settings = TFL_DB.getSettings();
+  const kitchenOpen = !!settings.isOpen;
   let products = TFL_DB.getProducts();
   
   // Filter out unlisted products (done in admin as unlist, here we assume all products has inStock/list property, we add visible check)
@@ -358,7 +360,9 @@ function renderProducts() {
     const totalQty = getCartProductQty(p.id);
     
     let actionBtnHtml = "";
-    if (!p.inStock) {
+    if (!kitchenOpen) {
+      actionBtnHtml = `<button class="add-btn-empty add-btn-disabled" type="button" disabled>Closed</button>`;
+    } else if (!p.inStock) {
       actionBtnHtml = `<div class="out-of-stock-badge">Sold Out</div>`;
     } else if (totalQty === 0) {
       actionBtnHtml = `
@@ -418,6 +422,11 @@ function getCartProductQty(productId) {
 
 // Initiate add to cart, check if condiments needed
 function initiateAddToCart(productId) {
+  const settings = TFL_DB.getSettings();
+  if (!settings.isOpen) {
+    TFL_DB.showToast("Kitchen is closed right now. You can view the menu, but ordering is disabled.", "warning");
+    return;
+  }
   const product = TFL_DB.getProducts().find(p => p.id === productId);
   if (!product || !product.inStock) return;
   
