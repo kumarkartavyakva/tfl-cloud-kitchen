@@ -39,10 +39,11 @@ export default function LegacyPage({ title, description, bodyHtml, pageScript, b
         .catch((err) => console.error("Service Worker registration failed:", err));
     };
 
+    const schedule = window.requestIdleCallback || ((callback) => setTimeout(callback, 1200));
     if (document.readyState === "complete") {
-      registerServiceWorker();
+      schedule(registerServiceWorker);
     } else {
-      window.addEventListener("load", registerServiceWorker, { once: true });
+      window.addEventListener("load", () => schedule(registerServiceWorker), { once: true });
     }
   }, [basePath]);
 

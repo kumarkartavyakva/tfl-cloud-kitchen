@@ -8,6 +8,23 @@ let priceSortDirection = null; // null, 'asc', 'desc'
 let searchQuery = "";
 let selectedProductForAddons = null;
 let currentReceiptOrder = null;
+let productRenderFrame = null;
+
+function scheduleIdle(callback) {
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(callback, { timeout: 1500 });
+  } else {
+    setTimeout(callback, 0);
+  }
+}
+
+function scheduleProductRender() {
+  if (productRenderFrame) cancelAnimationFrame(productRenderFrame);
+  productRenderFrame = requestAnimationFrame(() => {
+    productRenderFrame = null;
+    renderProducts();
+  });
+}
 
 // Initialize Page
 if (document.readyState === "loading") {
@@ -33,7 +50,7 @@ async function initCustomerPage() {
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       searchQuery = e.target.value.toLowerCase().trim();
-      renderProducts();
+      scheduleProductRender();
     });
   }
   
@@ -46,7 +63,7 @@ async function initCustomerPage() {
     } catch(e){}
   }
 
-  syncCustomerCloudData();
+  scheduleIdle(syncCustomerCloudData);
 }
 
 async function syncCustomerCloudData() {
@@ -157,7 +174,7 @@ function renderUpdates() {
   }
   
   document.getElementById("announcements-section").style.display = "block";
-  container.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   
   updates.forEach(u => {
     const slide = document.createElement("div");
@@ -167,15 +184,16 @@ function renderUpdates() {
     const imgUrl = u.imageUrl || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80";
     
     slide.innerHTML = `
-      <img src="${imgUrl}" alt="${u.title}" class="update-img" loading="lazy">
+      <img src="${imgUrl}" alt="${u.title}" class="update-img" loading="lazy" decoding="async">
       <div class="update-overlay">
         <span class="update-tag tag-${u.type || 'new_launch'}">${(u.type || 'New Launch').replace('_', ' ')}</span>
         <h3 class="update-title">${u.title}</h3>
         <p class="update-desc">${u.description}</p>
       </div>
     `;
-    container.appendChild(slide);
+    fragment.appendChild(slide);
   });
+  container.replaceChildren(fragment);
 }
 
 // Render Sub-brands logo horizontal grid
@@ -187,7 +205,7 @@ function renderSubBrands() {
     .filter(s => s.visible)
     .sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
     
-  container.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   
   // Add an "All" option card
   const allCard = document.createElement("div");
@@ -197,7 +215,7 @@ function renderSubBrands() {
     <div class="subbrand-logo">🧪</div>
     <div class="subbrand-name">All Labs</div>
   `;
-  container.appendChild(allCard);
+  fragment.appendChild(allCard);
   
   subbrands.forEach(s => {
     const card = document.createElement("div");
@@ -208,14 +226,15 @@ function renderSubBrands() {
     const isEmoji = s.logo.length <= 4;
     const logoHtml = isEmoji 
       ? `<div class="subbrand-logo">${s.logo}</div>`
-      : `<img src="${s.logo}" alt="${s.name}" class="subbrand-logo" style="object-fit: cover;" loading="lazy">`;
+      : `<img src="${s.logo}" alt="${s.name}" class="subbrand-logo" style="object-fit: cover;" loading="lazy" decoding="async">`;
 
     card.innerHTML = `
       ${logoHtml}
       <div class="subbrand-name">${s.name}</div>
     `;
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
+  container.replaceChildren(fragment);
 }
 
 // Select category/sub-brand
@@ -304,8 +323,6 @@ function renderProducts() {
     products.sort((a, b) => b.price - a.price);
   }
 
-  container.innerHTML = "";
-  
   if (products.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; padding: 40px var(--space-md); color: var(--color-text-muted);">
@@ -316,6 +333,8 @@ function renderProducts() {
     lucide.createIcons();
     return;
   }
+
+  const fragment = document.createDocumentFragment();
   
   products.forEach(p => {
     const card = document.createElement("div");
@@ -370,14 +389,15 @@ function renderProducts() {
         </div>
       </div>
       <div class="product-img-container">
-        <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80'}" alt="${p.name}" loading="lazy">
+        <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80'}" alt="${p.name}" loading="lazy" decoding="async">
         <div class="product-action">
           ${actionBtnHtml}
         </div>
       </div>
     `;
-    container.appendChild(card);
+    fragment.appendChild(card);
   });
+  container.replaceChildren(fragment);
   
   lucide.createIcons();
 }

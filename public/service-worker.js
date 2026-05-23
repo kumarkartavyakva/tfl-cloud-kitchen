@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tfl-cache-v7';
+const CACHE_NAME = 'tfl-cache-v8';
 const ASSETS_TO_CACHE = [
   './',
   './admin',
@@ -34,7 +34,9 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    Promise.all([
+      self.registration.navigationPreload ? self.registration.navigationPreload.enable() : Promise.resolve(),
+      caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
@@ -43,23 +45,30 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => self.clients.claim())
+      })
+    ]).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // 1. Skip sync endpoints or non-GET requests
-  if (url.searchParams.has('action') || event.request.method !== 'GET') {
+  // 1. Skip sync endpoints, Supabase realtime/API calls, and non-GET requests.
+  if (
+    event.request.method !== 'GET' ||
+    url.searchParams.has('action') ||
+    url.hostname.includes('supabase.co')
+  ) {
     event.respondWith(fetch(event.request));
     return;
   }
 
   // 2. Network-First Strategy for HTML pages (so updates propagate immediately)
   if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
+    const networkResponse = event.preloadResponse.then((preload) => preload || fetch(event.request));
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('HTML network timeout')), 1500));
     event.respondWith(
-      fetch(event.request)
+      Promise.race([networkResponse, timeout])
         .then((response) => {
           const responseCopy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
@@ -73,13 +82,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. Cache-First Strategy for static resources (JS, CSS, images, fonts)
+  // 3. Stale-while-revalidate for static resources. Repeat visits stay instant.
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((response) => {
+      const fetchPromise = fetch(event.request).then((response) => {
         if (!response || response.status !== 200) {
           return response;
         }
@@ -92,6 +98,12 @@ self.addEventListener('fetch', (event) => {
           return caches.match('./tfl_logo.png');
         }
       });
+
+      if (cachedResponse) {
+        event.waitUntil(fetchPromise);
+        return cachedResponse;
+      }
+      return fetchPromise;
     })
   );
 });

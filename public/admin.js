@@ -8,6 +8,14 @@ let currentKpiFilter = 'today';
 let knownOrderIds = new Set();
 let adminRefreshTimer = null;
 
+function scheduleIdle(callback) {
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(callback, { timeout: 1500 });
+  } else {
+    setTimeout(callback, 0);
+  }
+}
+
 // Initialize Admin Portal
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initAdminPage);
@@ -20,7 +28,7 @@ async function initAdminPage() {
   knownOrderIds = new Set(TFL_DB.getOrders().map(order => order.id));
   document.addEventListener("tfl_db_updated", handleDbUpdated);
   checkSession();
-  await loadAdminCloudData();
+  scheduleIdle(loadAdminCloudData);
   
   // Connect input color pickers with text inputs for Customization
   const primaryColorPicker = document.getElementById("cust-primary-color");
