@@ -319,17 +319,25 @@ const TFL_DB = {
       console.warn("Supabase client library is not loaded.");
       return null;
     }
+    const supabaseUrl = this.normalizeSupabaseUrl(settings.supabaseUrl);
+    const supabaseKey = String(settings.supabaseKey || "").trim();
+    if (!supabaseUrl || !supabaseKey) return null;
     if (
       this._supabaseClient &&
-      this._supabaseUrl === settings.supabaseUrl &&
-      this._supabaseKey === settings.supabaseKey
+      this._supabaseUrl === supabaseUrl &&
+      this._supabaseKey === supabaseKey
     ) {
       return this._supabaseClient;
     }
-    this._supabaseUrl = settings.supabaseUrl;
-    this._supabaseKey = settings.supabaseKey;
-    this._supabaseClient = window.supabase.createClient(settings.supabaseUrl, settings.supabaseKey);
+    this._supabaseUrl = supabaseUrl;
+    this._supabaseKey = supabaseKey;
+    this._supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
     return this._supabaseClient;
+  },
+
+  normalizeSupabaseUrl(url) {
+    const trimmed = String(url || "").trim().replace(/\/+$/, "");
+    return trimmed.replace(/\/rest\/v1$/i, "");
   },
 
   async initRealtimeSubscription() {
