@@ -28,6 +28,7 @@ async function initAdminPage() {
     localStorage.setItem("tfl_theme", "light");
   }
 
+  resetLoginFields();
   TFL_DB.initTheme();
   knownOrderIds = new Set(TFL_DB.getOrders().map(order => order.id));
   document.addEventListener("tfl_db_updated", handleDbUpdated);
@@ -71,6 +72,19 @@ async function loadAdminCloudData() {
   }
 }
 
+function resetLoginFields() {
+  const username = document.getElementById("login-username");
+  const password = document.getElementById("login-password");
+  if (username) {
+    username.value = "";
+    username.setAttribute("autocomplete", "off");
+  }
+  if (password) {
+    password.value = "";
+    password.setAttribute("autocomplete", "off");
+  }
+}
+
 // Check Session & Auth Status
 function checkSession() {
   const session = sessionStorage.getItem("tfl_admin_session");
@@ -95,6 +109,7 @@ function checkSession() {
     // Default render
     switchTab('dashboard');
   } else {
+    resetLoginFields();
     loginOverlay.style.display = "grid";
     dashboardContainer.style.display = "none";
   }
