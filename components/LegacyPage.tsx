@@ -1,13 +1,21 @@
 import Head from "next/head";
 import { useEffect } from "react";
 
-function assetPath(basePath, fileName) {
+export type LegacyPageProps = {
+  title: string;
+  description: string;
+  bodyHtml: string;
+  pageScript: "customer.js" | "admin.js";
+  basePath?: string;
+};
+
+function assetPath(basePath: string, fileName: string): string {
   return `${basePath || ""}/${fileName}`.replace(/\/{2,}/g, "/");
 }
 
-export default function LegacyPage({ title, description, bodyHtml, pageScript, basePath = "" }) {
+export default function LegacyPage({ title, description, bodyHtml, pageScript, basePath = "" }: LegacyPageProps) {
   useEffect(() => {
-    const loadScript = (src) => new Promise((resolve, reject) => {
+    const loadScript = (src: string): Promise<void> => new Promise((resolve, reject) => {
       if (document.querySelector(`script[data-legacy-src="${src}"]`)) {
         resolve();
         return;
@@ -16,7 +24,7 @@ export default function LegacyPage({ title, description, bodyHtml, pageScript, b
       script.src = src;
       script.async = true;
       script.dataset.legacySrc = src;
-      script.onload = resolve;
+      script.onload = () => resolve();
       script.onerror = reject;
       document.body.appendChild(script);
     });
@@ -39,7 +47,7 @@ export default function LegacyPage({ title, description, bodyHtml, pageScript, b
         .catch((err) => console.error("Service Worker registration failed:", err));
     };
 
-    const schedule = window.requestIdleCallback || ((callback) => setTimeout(callback, 1200));
+    const schedule = window.requestIdleCallback || ((callback: IdleRequestCallback) => setTimeout(callback, 1200));
     if (document.readyState === "complete") {
       schedule(registerServiceWorker);
     } else {

@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-function readLegacyBody(fileName) {
+export function readLegacyBody(fileName: string): string {
   const filePath = path.join(process.cwd(), fileName);
   const html = fs.readFileSync(filePath, "utf8");
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
@@ -12,5 +12,3 @@ function readLegacyBody(fileName) {
     .replace(/<!-- Service Worker Registration -->[\s\S]*?<\/script>\s*/i, "")
     .replace(/<script[\s\S]*?<\/script>/gi, "");
 }
-
-module.exports = { readLegacyBody };

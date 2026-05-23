@@ -1,11 +1,13 @@
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import LegacyPage from "../components/LegacyPage";
+import type { LegacyPageProps } from "../components/LegacyPage";
 import { readLegacyBody } from "../lib/legacyHtml";
 
-export default function AdminPage(props) {
+export default function AdminPage(props: InferGetStaticPropsType<typeof getStaticProps>) {
   return <LegacyPage {...props} />;
 }
 
-export function getStaticProps() {
+export const getStaticProps: GetStaticProps<LegacyPageProps> = () => {
   return {
     props: {
       title: "TFL Admin | Operations Dashboard",
@@ -15,4 +17,4 @@ export function getStaticProps() {
       basePath: process.env.GITHUB_PAGES === "true" ? "/tfl-cloud-kitchen" : ""
     }
   };
-}
+};
