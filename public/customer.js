@@ -150,9 +150,7 @@ function loadBrandCustomization() {
     announcementsSection.style.display = "none";
   }
 
-  // Pre-load UPI ID and QR code in elements
-  document.getElementById("checkout-upi-id").value = settings.upiId || "";
-  document.getElementById("checkout-upi-qr").src = settings.qrImageUrl || "";
+  refreshCheckoutUpiDetails(settings);
   
   // Apply theme styling colors
   TFL_DB.applyThemeColors();
@@ -912,7 +910,26 @@ function resetCheckoutForm() {
 // Toggle UPI payment instructions
 function toggleUpiSection(show) {
   const upiDiv = document.getElementById("checkout-upi-info");
+  if (!upiDiv) return;
+  if (show) {
+    refreshCheckoutUpiDetails();
+  }
   upiDiv.style.display = show ? "flex" : "none";
+}
+
+function refreshCheckoutUpiDetails(currentSettings) {
+  const settings = currentSettings || TFL_DB.getSettings();
+  const upiId = settings.upiId || "UPI ID not configured";
+  const upiInput = document.getElementById("checkout-upi-id");
+  const upiDisplay = document.getElementById("checkout-upi-display-value");
+  const upiQr = document.getElementById("checkout-upi-qr");
+
+  if (upiInput) upiInput.value = upiId;
+  if (upiDisplay) upiDisplay.innerText = upiId;
+  if (upiQr) {
+    upiQr.src = settings.qrImageUrl || "";
+    upiQr.style.display = settings.qrImageUrl ? "block" : "none";
+  }
 }
 
 function copyUpiId() {

@@ -793,6 +793,32 @@
   border-radius: var(--radius-sm);
 }
 
+.upi-id-display {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid rgba(22, 163, 74, 0.18);
+  border-radius: 10px;
+  background: #f0fdf4;
+  color: #14532d;
+  text-align: center;
+}
+
+.upi-id-display span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #15803d;
+}
+
+.upi-id-display strong {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
 .receipt-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

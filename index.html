@@ -234,6 +234,10 @@
             Scan to Pay & Copy UPI ID
           </p>
           <img id="checkout-upi-qr" src="" alt="UPI QR Code" class="qr-image">
+          <div class="upi-id-display">
+            <span>UPI ID</span>
+            <strong id="checkout-upi-display-value">Loading...</strong>
+          </div>
           <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
             <input type="text" id="checkout-upi-id" class="form-control" style="font-size: 0.8rem; padding: 0.5rem; text-align: center;" readonly>
             <button type="button" class="btn btn-secondary btn-sm" onclick="copyUpiId()">Copy</button>
