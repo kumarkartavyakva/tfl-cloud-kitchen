@@ -22,9 +22,9 @@ const DEFAULT_SETTINGS = {
   themeBgColor: "#0b0b0c",
   googleSheetUrl: "", // Paste your Apps Script URL here to enable cloud sync
   googleSheetEnabled: false,
-  supabaseEnabled: false,
-  supabaseUrl: "",
-  supabaseKey: "",
+  supabaseEnabled: true,
+  supabaseUrl: "https://napbxlmhmbelwuxxbnyq.supabase.co",
+  supabaseKey: "sb_publishable_k6ofEjNmElPKjRChvdN6Pg_4hwUgM-E",
   orderRetentionDays: 2,
   maxCompletedOrders: 100
 };
