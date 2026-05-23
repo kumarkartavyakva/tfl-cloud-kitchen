@@ -1291,3 +1291,83 @@ body:not(.light-theme) #section-settings input:-webkit-autofill:focus {
   box-shadow: 0 0 0 1000px #0f0f12 inset !important;
   caret-color: #f8fafc;
 }
+
+/* Shared admin form panels: Brand Customization, Settings, and modal forms. */
+body.light-theme #section-customization .glass-panel,
+body.light-theme #brand-customization-form,
+body.light-theme #section-settings .glass-panel,
+body.light-theme #settings-management-form {
+  background: #ffffff !important;
+  border-color: rgba(17, 24, 39, 0.08) !important;
+  color: #171717 !important;
+}
+
+body.light-theme #section-customization .form-control,
+body.light-theme #brand-customization-form .form-control,
+body.light-theme #section-settings .form-control,
+body.light-theme #settings-management-form .form-control {
+  background: #ffffff !important;
+  border-color: rgba(17, 24, 39, 0.12) !important;
+  color: #171717 !important;
+}
+
+body.light-theme #section-customization .form-label,
+body.light-theme #section-settings .form-label {
+  color: #6b7280 !important;
+}
+
+body:not(.light-theme) #section-customization .glass-panel,
+body:not(.light-theme) #brand-customization-form,
+body:not(.light-theme) .tab-panel > form.glass-panel {
+  background: #151518 !important;
+  border-color: #2a2a31 !important;
+  color: #f7f7f8 !important;
+}
+
+body:not(.light-theme) #section-customization .form-row,
+body:not(.light-theme) #section-customization .form-group,
+body:not(.light-theme) #brand-customization-form .form-row,
+body:not(.light-theme) #brand-customization-form .form-group {
+  color: #f7f7f8 !important;
+}
+
+body:not(.light-theme) #section-customization .form-label,
+body:not(.light-theme) #brand-customization-form .form-label {
+  color: #d4d4d8 !important;
+}
+
+body:not(.light-theme) #section-customization .form-control,
+body:not(.light-theme) #brand-customization-form .form-control,
+body:not(.light-theme) #section-customization input.form-control,
+body:not(.light-theme) #brand-customization-form input.form-control {
+  background: #0f0f12 !important;
+  border-color: #3f3f46 !important;
+  color: #f8fafc !important;
+  box-shadow: none !important;
+  color-scheme: dark;
+}
+
+body:not(.light-theme) #section-customization input[type="color"].form-control,
+body:not(.light-theme) #brand-customization-form input[type="color"].form-control {
+  background: #18181b !important;
+  border-color: #52525b !important;
+}
+
+body:not(.light-theme) #section-customization .form-control::placeholder,
+body:not(.light-theme) #brand-customization-form .form-control::placeholder {
+  color: #71717a !important;
+}
+
+body:not(.light-theme) #section-customization .form-control:focus,
+body:not(.light-theme) #brand-customization-form .form-control:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18) !important;
+}
+
+body:not(.light-theme) #section-customization input:-webkit-autofill,
+body:not(.light-theme) #section-customization input:-webkit-autofill:hover,
+body:not(.light-theme) #section-customization input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc !important;
+  box-shadow: 0 0 0 1000px #0f0f12 inset !important;
+  caret-color: #f8fafc;
+}
