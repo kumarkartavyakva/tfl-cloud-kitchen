@@ -342,7 +342,7 @@ function renderProducts() {
   
   products.forEach(p => {
     const card = document.createElement("div");
-    card.className = `product-card anim-slide-up hover-float ${!p.inStock ? 'out-of-stock' : ''}`;
+    card.className = `product-card ${!p.inStock ? 'out-of-stock' : ''}`;
     
     // Veg/NonVeg dot indicators
     const vegBadge = p.veg 

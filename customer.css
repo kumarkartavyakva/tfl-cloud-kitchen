@@ -926,17 +926,18 @@ body.light-theme .modal-header h3 {
 
 /* Micro-interactions: scale & shadow hover states */
 .product-card {
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  transform: none;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-2px) scale(1.01);
+  transform: none;
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
 }
 
 .product-card:active {
-  transform: translateY(0) scale(0.99);
+  transform: none;
 }
 
 .update-slide {
@@ -1229,7 +1230,7 @@ body {
 }
 
 .product-card:hover {
-  transform: translateY(-1px);
+  transform: none;
   border-color: rgba(23, 23, 23, 0.12);
   box-shadow: var(--shadow-md);
 }
@@ -1394,6 +1395,7 @@ body {
     min-height: 172px;
     max-width: 420px;
     width: 100%;
+    transform: none !important;
   }
 
   .product-img-container {
