@@ -1372,23 +1372,27 @@ body {
   }
 
   .menu-section {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: stretch;
+    grid-template-columns: repeat(2, minmax(300px, 420px));
+    justify-content: center;
+    align-items: start;
   }
 
   .product-card {
-    flex-direction: column-reverse;
-    min-height: 330px;
+    flex-direction: row;
+    min-height: 172px;
+    max-width: 420px;
+    width: 100%;
   }
 
   .product-img-container {
-    width: 100%;
-    height: 176px;
+    width: 132px;
+    height: 132px;
+    aspect-ratio: 1 / 1;
   }
 
   .product-action {
-    bottom: -12px;
-    right: 14px;
+    right: 18px;
+    bottom: 14px;
     left: auto;
     transform: none;
   }
