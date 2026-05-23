@@ -1446,3 +1446,133 @@ body {
     height: 104px;
   }
 }
+
+/* --- COMPLETE DARK THEME OVERRIDES --- */
+body:not(.light-theme) {
+  --color-bg: #09090b;
+  --color-bg-card: #151518;
+  --color-bg-card-hover: #1d1d22;
+  --color-text: #f7f7f8;
+  --color-text-muted: #a1a1aa;
+  --color-border: #2a2a31;
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.42);
+  background: #030305;
+}
+
+body:not(.light-theme) .app-container,
+body:not(.light-theme) .subbrands-section,
+body:not(.light-theme) .updates-section,
+body:not(.light-theme) .menu-section {
+  background: var(--color-bg);
+}
+
+body:not(.light-theme) .hero::after {
+  background: linear-gradient(to top, rgba(9, 9, 11, 1) 14%, rgba(9, 9, 11, 0.62) 58%, rgba(0, 0, 0, 0.18) 100%);
+}
+
+body:not(.light-theme) .brand-title,
+body:not(.light-theme) .section-title,
+body:not(.light-theme) .product-name,
+body:not(.light-theme) .product-price,
+body:not(.light-theme) .add-btn-qty,
+body:not(.light-theme) .closed-title,
+body:not(.light-theme) .slide-over-header h2,
+body:not(.light-theme) .condiments-header h3,
+body:not(.light-theme) .modal-header h3,
+body:not(.light-theme) .slide-over-footer span[style*="color: #fff"],
+body:not(.light-theme) .condiments-body span[style*="color: #fff"] {
+  color: var(--color-text) !important;
+}
+
+body:not(.light-theme) .brand-tagline,
+body:not(.light-theme) .product-desc,
+body:not(.light-theme) .form-label,
+body:not(.light-theme) .closed-desc {
+  color: var(--color-text-muted);
+}
+
+body:not(.light-theme) .search-filter-container {
+  background: rgba(9, 9, 11, 0.9);
+  border-bottom-color: var(--color-border);
+}
+
+body:not(.light-theme) .search-box input,
+body:not(.light-theme) .form-control,
+body:not(.light-theme) select.form-control,
+body:not(.light-theme) select.form-control option {
+  background: #111114 !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+body:not(.light-theme) .form-control::placeholder {
+  color: #71717a;
+}
+
+body:not(.light-theme) .filter-pill,
+body:not(.light-theme) .subbrand-card,
+body:not(.light-theme) .product-card,
+body:not(.light-theme) .status-badge,
+body:not(.light-theme) .add-btn-empty,
+body:not(.light-theme) .add-btn-wrapper {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .filter-pill.active,
+body:not(.light-theme) .subbrand-card.active {
+  background: #f7f7f8;
+  color: #111114;
+  border-color: #f7f7f8;
+}
+
+body:not(.light-theme) .subbrand-card.active .subbrand-name,
+body:not(.light-theme) .subbrand-card.active .subbrand-logo {
+  color: #111114;
+}
+
+body:not(.light-theme) .subbrand-logo,
+body:not(.light-theme) .product-img-container {
+  background: #202026;
+}
+
+body:not(.light-theme) .subbrand-name {
+  color: var(--color-text);
+}
+
+body:not(.light-theme) .slide-over,
+body:not(.light-theme) .condiments-modal,
+body:not(.light-theme) .admin-modal,
+body:not(.light-theme) .slide-over-header,
+body:not(.light-theme) .slide-over-footer,
+body:not(.light-theme) .modal-header,
+body:not(.light-theme) .modal-footer,
+body:not(.light-theme) .condiments-header,
+body:not(.light-theme) .condiments-footer,
+body:not(.light-theme) .closed-screen {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .qr-container {
+  background: #111827;
+  border-color: #273449;
+}
+
+body:not(.light-theme) .upi-id-display {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(34, 197, 94, 0.34);
+  color: #bbf7d0;
+}
+
+body:not(.light-theme) .upi-id-display span {
+  color: #86efac;
+}
+
+body:not(.light-theme) .sticky-cart-btn {
+  background: #f7f7f8 !important;
+  color: #111114;
+}

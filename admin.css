@@ -1062,3 +1062,139 @@ div[style*="font-weight: 700; color: #fff"] {
     align-items: flex-start !important;
   }
 }
+
+/* --- COMPLETE DARK OPERATIONS DASHBOARD OVERRIDES --- */
+body:not(.light-theme) {
+  --color-bg: #09090b;
+  --color-bg-card: #151518;
+  --color-bg-card-hover: #1d1d22;
+  --color-text: #f7f7f8;
+  --color-text-muted: #a1a1aa;
+  --color-border: #2a2a31;
+  --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.42);
+  background: var(--color-bg);
+}
+
+body:not(.light-theme) .admin-container,
+body:not(.light-theme) .main-content,
+body:not(.light-theme) .login-backdrop {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body:not(.light-theme) .sidebar,
+body:not(.light-theme) .content-header,
+body:not(.light-theme) .stat-card,
+body:not(.light-theme) .table-wrapper,
+body:not(.light-theme) .admin-modal,
+body:not(.light-theme) .login-card,
+body:not(.light-theme) .glass-panel,
+body:not(.light-theme) .sync-banner {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .sidebar-logo,
+body:not(.light-theme) .profile-name,
+body:not(.light-theme) .content-title,
+body:not(.light-theme) .stat-value,
+body:not(.light-theme) .hamburger-menu,
+body:not(.light-theme) .login-title,
+body:not(.light-theme) .modal-header h3,
+body:not(.light-theme) .tab-panel h3,
+body:not(.light-theme) .tab-panel h4,
+body:not(.light-theme) .glass-panel h4,
+body:not(.light-theme) section h3[style*="color: #fff"],
+body:not(.light-theme) h3[style*="color: #fff"],
+body:not(.light-theme) h4[style*="color: #fff"],
+body:not(.light-theme) div[style*="font-weight: 700; color: #fff"] {
+  color: var(--color-text) !important;
+}
+
+body:not(.light-theme) .sidebar-tagline,
+body:not(.light-theme) .profile-role,
+body:not(.light-theme) .sidebar-item,
+body:not(.light-theme) .stat-label,
+body:not(.light-theme) .form-label,
+body:not(.light-theme) .admin-table td {
+  color: var(--color-text-muted);
+}
+
+body:not(.light-theme) .sidebar-item:hover,
+body:not(.light-theme) .sidebar-item.active {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--color-primary);
+}
+
+body:not(.light-theme) .admin-table {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+}
+
+body:not(.light-theme) .admin-table th {
+  background: #101014;
+  color: #d4d4d8;
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .admin-table td,
+body:not(.light-theme) .admin-table tr {
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .admin-table tbody tr:hover {
+  background: var(--color-bg-card-hover);
+}
+
+body:not(.light-theme) .form-control,
+body:not(.light-theme) select.form-control,
+body:not(.light-theme) select.form-control option {
+  background: #111114 !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+body:not(.light-theme) .modal-header,
+body:not(.light-theme) .modal-footer {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .filter-pill {
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+body:not(.light-theme) .filter-pill.active {
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
+  border-color: var(--color-primary) !important;
+}
+
+body:not(.light-theme) .sync-banner {
+  color: #bfdbfe;
+  border-color: #1e3a8a;
+}
+
+body:not(.light-theme) .sync-banner.synced {
+  background: rgba(22, 163, 74, 0.12) !important;
+  border-color: rgba(34, 197, 94, 0.32) !important;
+  color: #86efac !important;
+}
+
+body:not(.light-theme) .sync-banner.unsynced {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.34);
+  color: #fbbf24;
+}
+
+@media (max-width: 900px) {
+  body:not(.light-theme) #section-orders .admin-table tr,
+  body:not(.light-theme) #section-dashboard .admin-table tr {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+  }
+}
