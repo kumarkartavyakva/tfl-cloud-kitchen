@@ -873,34 +873,63 @@ body:not(.light-theme) .customer-sync-status.is-warning {
 .receipt-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+  gap: 12px;
 }
 
 .receipt-actions .btn {
-  font-size: 0.85rem;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  box-shadow: none;
 }
 
 .receipt-primary-actions {
-  margin-top: var(--space-md);
+  margin-top: 18px;
 }
 
 .receipt-order-actions {
-  margin-top: var(--space-md);
+  margin-top: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.receipt-primary-actions .btn,
+.whatsapp-verification-box .btn {
+  min-height: 48px;
+  border-radius: 10px;
+  box-shadow: 0 10px 26px hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.18);
+}
+
+.receipt-order-actions .btn-danger {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.receipt-order-actions .btn-success,
+.whatsapp-verification-box .btn-success {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: 1px solid var(--color-primary);
 }
 
 .whatsapp-verification-box {
-  margin-top: var(--space-md);
-  border: 1px solid var(--color-warning);
-  background-color: rgba(245, 158, 11, 0.1);
-  padding: var(--space-md);
+  margin-top: 14px;
+  border: 1px solid hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.24);
+  background-color: hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.08);
+  padding: 14px;
   border-radius: var(--radius-md);
 }
 
 .whatsapp-verification-box p {
   font-size: 0.85rem;
-  color: var(--color-warning);
+  color: #166534;
   line-height: 1.4;
-  margin-bottom: var(--space-sm);
+  margin-bottom: 10px;
+}
+
+.modal-footer {
+  padding-top: 14px;
 }
 
 /* CLOSED KITCHEN SCREEN OVERLAY */
@@ -1647,6 +1676,25 @@ body:not(.light-theme) .closed-screen {
 body:not(.light-theme) .qr-container {
   background: #111827;
   border-color: #273449;
+}
+
+body:not(.light-theme) .receipt-order-actions {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+body:not(.light-theme) .receipt-order-actions .btn-danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fda4af;
+  border-color: rgba(244, 63, 94, 0.28);
+}
+
+body:not(.light-theme) .whatsapp-verification-box {
+  background: hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.12);
+  border-color: hsla(var(--color-primary-h), var(--color-primary-s), var(--color-primary-l), 0.3);
+}
+
+body:not(.light-theme) .whatsapp-verification-box p {
+  color: #bbf7d0;
 }
 
 body:not(.light-theme) .upi-id-display {
