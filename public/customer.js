@@ -10,6 +10,33 @@ let selectedProductForAddons = null;
 let currentReceiptOrder = null;
 let productRenderFrame = null;
 
+// Google Form backup config. Replace formResponseUrl and entry IDs after creating your Google Form.
+// Keep values blank to use the editable prefilled URL from Admin > Settings instead.
+const GOOGLE_FORM_BACKUP_CONFIG = {
+  formResponseUrl: "",
+  entries: {
+    orderId: "",
+    orderDate: "",
+    customerName: "",
+    customerPhone: "",
+    customerWhatsapp: "",
+    customerEmail: "",
+    customerAddress: "",
+    customerNote: "",
+    paymentMode: "",
+    paymentStatus: "",
+    upiId: "",
+    itemsSummary: "",
+    itemQuantities: "",
+    addOns: "",
+    itemWisePrices: "",
+    subtotal: "",
+    deliveryCharge: "",
+    lateNightFee: "",
+    grandTotal: ""
+  }
+};
+
 function scheduleIdle(callback) {
   if (typeof requestIdleCallback === "function") {
     requestIdleCallback(callback, { timeout: 1500 });
@@ -1006,6 +1033,7 @@ async function submitOrder(event) {
   const phone = document.getElementById("cust-phone").value.trim();
   const address = document.getElementById("cust-address").value.trim();
   const email = document.getElementById("cust-email").value.trim();
+  const note = document.getElementById("cust-note").value.trim();
   const paymentMode = document.querySelector('input[name="payment-mode"]:checked').value;
   
   const orderId = generateOrderCode();
@@ -1028,8 +1056,10 @@ async function submitOrder(event) {
     customerName: name,
     customerGender: gender,
     customerPhone: phone,
+    customerWhatsapp: phone,
     customerAddress: address,
     customerEmail: email || "N/A",
+    customerNote: note || "",
     paymentMode: paymentMode,
     paymentStatus: "Unpaid", // Payment status defaults to Unpaid
     items: orderedItems, // Array of structured items
@@ -1060,6 +1090,10 @@ async function submitOrder(event) {
   // Show Receipt Modal
   toggleCheckoutPanel(false);
   openReceiptModal(orderObj);
+
+  // Backup and notification actions run after receipt generation and never block it.
+  submitToGoogleForm(orderObj, { silent: true, automatic: true });
+  sendOrderWhatsApp({ automatic: true });
 }
 
 // Render receipt markup inside modal
@@ -1137,6 +1171,7 @@ function openReceiptModal(order) {
       Name: ${order.customerName}<br>
       Phone: ${order.customerPhone}<br>
       Address: ${order.customerAddress}<br>
+      ${order.customerNote ? `Note: ${order.customerNote}<br>` : ''}
       Payment: ${order.paymentMode} (${order.paymentStatus || 'Unpaid'})<br>
       Delivery Status: ${order.status}
     </div>
@@ -1155,11 +1190,7 @@ function openReceiptModal(order) {
     verificationBox.style.display = "none";
   }
 
-  // Google Form setup
-  const gFormBtn = document.getElementById("btn-submit-gform");
-  if (gFormBtn) {
-    gFormBtn.onclick = () => submitToGoogleForm(order);
-  }
+  updateRestaurantCallLink(settings);
   
   document.getElementById("receipt-modal").classList.add("active");
   document.getElementById("modal-backdrop").classList.add("active");
@@ -1224,6 +1255,37 @@ function getRestaurantWhatsAppNumber(settings, order) {
   return "";
 }
 
+function formatDisplayPhone(phone) {
+  const clean = formatWhatsAppNumber(phone);
+  if (!clean) return "";
+  if (clean.startsWith("91") && clean.length === 12) {
+    return `+91 ${clean.slice(2, 7)} ${clean.slice(7)}`;
+  }
+  return `+${clean}`;
+}
+
+function getRestaurantCallNumber(settings) {
+  return formatWhatsAppNumber(settings.whatsappNumber) || formatWhatsAppNumber(settings.supportNumber);
+}
+
+function updateRestaurantCallLink(settings) {
+  const callLink = document.getElementById("receipt-call-restaurant");
+  const callNumber = document.getElementById("receipt-call-number");
+  if (!callLink || !callNumber) return;
+
+  const phone = getRestaurantCallNumber(settings);
+  if (!phone) {
+    callLink.href = "#";
+    callNumber.innerText = "Phone number not configured";
+    callLink.setAttribute("aria-disabled", "true");
+    return;
+  }
+
+  callLink.href = `tel:+${phone}`;
+  callNumber.innerText = formatDisplayPhone(phone);
+  callLink.removeAttribute("aria-disabled");
+}
+
 // Helper for gender greeting
 function getGenderSalutation(order) {
   if (order.customerGender === "Female") {
@@ -1265,7 +1327,7 @@ function getSubBrandGreeting(order) {
 }
 
 // Assembles WhatsApp link to place/send order details
-function sendOrderWhatsApp() {
+function sendOrderWhatsApp(options = {}) {
   if (!currentReceiptOrder) return;
   const settings = TFL_DB.getSettings();
   
@@ -1310,6 +1372,9 @@ function sendOrderWhatsApp() {
   message += `Name: ${currentReceiptOrder.customerName}\n`;
   message += `WhatsApp: ${currentReceiptOrder.customerPhone}\n`;
   message += `Address: ${currentReceiptOrder.customerAddress}\n`;
+  if (currentReceiptOrder.customerNote) {
+    message += `Note: ${currentReceiptOrder.customerNote}\n`;
+  }
   message += `Payment Mode: ${currentReceiptOrder.paymentMode}\n`;
   message += `Payment Status: ${currentReceiptOrder.paymentStatus || 'Unpaid'}\n\n`;
   
@@ -1345,7 +1410,10 @@ function sendUpiScreenshotWhatsApp() {
     return;
   }
   
-  window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
+  const opened = window.open(`https://wa.me/${waNumber}?text=${encodedMsg}`, '_blank');
+  if (!opened && options.automatic) {
+    TFL_DB.showToast("Order is ready. Please tap 'Send Order to Restaurant WhatsApp' if WhatsApp did not open.", "info");
+  }
 }
 
 
@@ -1363,27 +1431,188 @@ function downloadReceiptPDF() {
   window.print();
 }
 
-// Google Form backup integration
-function submitToGoogleForm(order) {
+function formatOrderItemsForBackup(order) {
+  return (order.items || []).map(item => {
+    const addOns = formatOrderItemAddons(item);
+    const addOnText = addOns ? ` | Add-ons: ${addOns}` : "";
+    return `${item.name} x ${item.quantity} @ Rs ${Number(item.price || 0).toFixed(2)}${addOnText}`;
+  }).join("\n");
+}
+
+function formatOrderItemAddons(item) {
+  return (item.condiments || []).map(c => {
+    if (c && typeof c === "object") {
+      const qtyText = c.quantity && c.quantity > 1 ? ` x${c.quantity}` : "";
+      const priceText = Number(c.price || 0) > 0 ? ` (+Rs ${Number(c.price || 0).toFixed(2)})` : "";
+      return `${c.name}${qtyText}${priceText}`;
+    }
+    return c;
+  }).filter(Boolean).join(", ");
+}
+
+function buildGoogleFormPayload(order) {
   const settings = TFL_DB.getSettings();
-  if (!settings.googleFormLink || settings.googleFormLink.includes("your_form_id")) {
-    TFL_DB.showToast("Admin has not configured the Google Form backup integration link yet.", "warning");
-    return;
+  const itemsSummary = formatOrderItemsForBackup(order);
+  const itemQuantities = (order.items || []).map(item => `${item.name}: ${item.quantity}`).join("\n");
+  const addOns = (order.items || []).map(item => {
+    const formatted = formatOrderItemAddons(item);
+    return formatted ? `${item.name}: ${formatted}` : "";
+  }).filter(Boolean).join("\n");
+  const itemWisePrices = (order.items || []).map(item => {
+    const lineTotal = Number(item.price || 0) * Number(item.quantity || 0);
+    return `${item.name}: Rs ${Number(item.price || 0).toFixed(2)} x ${item.quantity} = Rs ${lineTotal.toFixed(2)}`;
+  }).join("\n");
+
+  return {
+    orderId: order.id || "",
+    orderDate: order.orderDate || order.createdAt || "",
+    customerName: order.customerName || "",
+    customerPhone: order.customerPhone || "",
+    customerWhatsapp: order.customerWhatsapp || order.customerPhone || "",
+    customerEmail: order.customerEmail || "",
+    customerAddress: order.customerAddress || "",
+    customerNote: order.customerNote || "",
+    paymentMode: order.paymentMode || "",
+    paymentStatus: order.paymentStatus || "Unpaid",
+    upiId: order.paymentMode === "UPI" ? (settings.upiId || "") : "",
+    itemsSummary,
+    itemQuantities,
+    addOns,
+    itemWisePrices,
+    subtotal: Number(order.subtotal || 0).toFixed(2),
+    deliveryCharge: Number(order.deliveryCharge || 0).toFixed(2),
+    lateNightFee: Number(order.lateNightFee || 0).toFixed(2),
+    grandTotal: Number(order.grandTotal || 0).toFixed(2)
+  };
+}
+
+function getConfiguredGoogleFormUrl(settings) {
+  const configuredUrl = (GOOGLE_FORM_BACKUP_CONFIG.formResponseUrl || "").trim();
+  if (configuredUrl) return configuredUrl;
+  return (settings.googleFormLink || "").trim();
+}
+
+function hasGoogleFormEntryMapping() {
+  return Object.values(GOOGLE_FORM_BACKUP_CONFIG.entries).some(Boolean);
+}
+
+function buildGoogleFormTemplateUrl(templateUrl, payload) {
+  const replacements = {
+    "{name}": payload.customerName,
+    "{phone}": payload.customerPhone,
+    "{whatsapp}": payload.customerWhatsapp,
+    "{email}": payload.customerEmail,
+    "{address}": payload.customerAddress,
+    "{note}": payload.customerNote,
+    "{items}": payload.itemsSummary,
+    "{quantities}": payload.itemQuantities,
+    "{addons}": payload.addOns,
+    "{prices}": payload.itemWisePrices,
+    "{subtotal}": payload.subtotal,
+    "{delivery}": payload.deliveryCharge,
+    "{lateNightFee}": payload.lateNightFee,
+    "{total}": payload.grandTotal,
+    "{payment}": payload.paymentMode,
+    "{paymentMode}": payload.paymentMode,
+    "{paymentStatus}": payload.paymentStatus,
+    "{upiId}": payload.upiId,
+    "{orderId}": payload.orderId,
+    "{receiptNumber}": payload.orderId,
+    "{date}": payload.orderDate,
+    "{dateTime}": payload.orderDate
+  };
+
+  let url = templateUrl;
+  Object.entries(replacements).forEach(([key, value]) => {
+    url = url.replaceAll(key, encodeURIComponent(value || ""));
+  });
+  return url;
+}
+
+function backupGoogleFormFailure(order, errorMessage) {
+  const key = "tfl_google_form_failed_orders";
+  const existing = JSON.parse(localStorage.getItem(key) || "[]");
+  existing.push({
+    failedAt: new Date().toISOString(),
+    error: errorMessage || "Unknown Google Form sync error",
+    order
+  });
+  localStorage.setItem(key, JSON.stringify(existing.slice(-30)));
+}
+
+// Google Form backup integration
+async function submitToGoogleForm(order, options = {}) {
+  const settings = TFL_DB.getSettings();
+  const formUrl = getConfiguredGoogleFormUrl(settings);
+  const usingTemplateLink = formUrl && formUrl.includes("{");
+  const hasConfiguredForm = formUrl && !formUrl.includes("your_form_id");
+  const hasEntryMapping = hasGoogleFormEntryMapping();
+
+  if (!hasConfiguredForm) {
+    if (!options.silent) {
+      TFL_DB.showToast("Admin has not configured the Google Form backup integration link yet.", "warning");
+    }
+    return false;
   }
-  
-  // Prefilled variables dictionary replacement
-  const itemsText = order.items.map(i => `${i.name} x ${i.quantity}`).join(", ");
-  
-  let url = settings.googleFormLink
-    .replace("{name}", encodeURIComponent(order.customerName))
-    .replace("{phone}", encodeURIComponent(order.customerPhone))
-    .replace("{address}", encodeURIComponent(order.customerAddress))
-    .replace("{items}", encodeURIComponent(itemsText))
-    .replace("{total}", encodeURIComponent(order.grandTotal))
-    .replace("{payment}", encodeURIComponent(order.paymentMode))
-    .replace("{paymentMode}", encodeURIComponent(order.paymentMode));
-    
-  // Trigger form submit in hidden iframe or new tab
+
+  const payload = buildGoogleFormPayload(order);
+
+  try {
+    if (hasEntryMapping && !usingTemplateLink) {
+      const formData = new FormData();
+      Object.entries(GOOGLE_FORM_BACKUP_CONFIG.entries).forEach(([payloadKey, entryId]) => {
+        if (!entryId) return;
+        formData.append(entryId, payload[payloadKey] || "");
+      });
+
+      await fetch(formUrl, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      });
+    } else {
+      const url = buildGoogleFormTemplateUrl(formUrl, payload);
+      await submitGoogleFormWithIframe(url);
+    }
+
+    if (!options.silent) {
+      TFL_DB.showToast("Order details backup submitted successfully!", "success");
+    }
+    return true;
+  } catch (error) {
+    console.warn("Google Form backup failed", error);
+    backupGoogleFormFailure(order, error && error.message);
+    TFL_DB.showToast("Order saved locally, but Google Form sync failed.", "warning");
+    return false;
+  }
+}
+
+function submitGoogleFormWithIframe(url) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Google Form submit timed out"));
+    }, 7000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      if (frame.parentNode) frame.parentNode.removeChild(frame);
+    }
+
+    const frame = document.createElement("iframe");
+    frame.style.display = "none";
+    frame.onload = () => {
+      cleanup();
+      resolve(true);
+    };
+    frame.onerror = () => {
+      cleanup();
+      reject(new Error("Google Form iframe submit failed"));
+    };
+    frame.src = url;
+    document.body.appendChild(frame);
+  });
+}
   const frame = document.createElement("iframe");
   frame.style.display = "none";
   frame.src = url;

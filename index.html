@@ -214,6 +214,10 @@
           <label class="form-label" for="cust-email">Email (Optional)</label>
           <input type="email" id="cust-email" class="form-control" placeholder="For receipt copy" autocomplete="new-password">
         </div>
+        <div class="form-group">
+          <label class="form-label" for="cust-note">Order Note (Optional)</label>
+          <textarea id="cust-note" class="form-control" placeholder="Any delivery instruction or food preference" rows="2" autocomplete="new-password"></textarea>
+        </div>
         
         <div class="form-group">
           <label class="form-label">Payment Method *</label>
@@ -300,9 +304,13 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button id="btn-submit-gform" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: var(--space-sm); font-size: 0.75rem; border-color: rgba(255,255,255,0.1);">
-        Send Here If Whatsapp Not Working
-      </button>
+      <a id="receipt-call-restaurant" class="btn btn-secondary btn-sm call-restaurant-link" href="tel:+919999999999">
+        <i data-lucide="phone"></i>
+        <span>
+          <strong>Call Restaurant</strong>
+          <small id="receipt-call-number">+91 9999999999</small>
+        </span>
+      </a>
     </div>
   </div>
 

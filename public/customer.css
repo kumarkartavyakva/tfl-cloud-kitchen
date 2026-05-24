@@ -932,6 +932,27 @@ body:not(.light-theme) .customer-sync-status.is-warning {
   padding-top: 14px;
 }
 
+.call-restaurant-link {
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.call-restaurant-link span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.call-restaurant-link small {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 /* CLOSED KITCHEN SCREEN OVERLAY */
 .closed-screen {
   text-align: center;

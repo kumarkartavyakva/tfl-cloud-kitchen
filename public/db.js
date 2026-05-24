@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS = {
   closedMessage: "Our kitchen is currently closed. We are formulating new recipes! Opening tomorrow at 12 PM.",
   brandLogo: "tfl_logo.png", // Optional Base64 or URL
   heroImage: "tfl_hero.png",
-  themePrimaryColor: "#ff6b00",
+  themePrimaryColor: "#16a34a",
   themeBgColor: "#0b0b0c",
   googleSheetUrl: "", // Paste your Apps Script URL here to enable cloud sync
   googleSheetEnabled: false,
