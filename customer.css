@@ -1253,17 +1253,20 @@ body {
   padding: 16px clamp(16px, 4vw, 44px) 120px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 14px;
+  align-items: stretch;
 }
 
 .product-card {
-  min-height: 148px;
+  min-height: 156px;
   background: #ffffff;
   border: 1px solid rgba(23, 23, 23, 0.08);
   border-radius: 8px;
   padding: 14px;
   box-shadow: var(--shadow-sm);
   gap: 14px;
+  align-items: stretch;
+  contain: layout paint;
 }
 
 .product-card:hover {
@@ -1297,11 +1300,13 @@ body {
 }
 
 .product-img-container {
-  width: 112px;
-  height: 112px;
+  width: clamp(116px, 28vw, 144px);
+  height: clamp(116px, 28vw, 144px);
+  aspect-ratio: 1 / 1;
   border-radius: 8px;
   border: 0;
   overflow: visible;
+  align-self: center;
 }
 
 .product-img-container img {
@@ -1409,10 +1414,11 @@ body {
 
   .menu-section {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 
   .product-card {
-    min-height: 164px;
+    min-height: 172px;
   }
 }
 
@@ -1422,28 +1428,31 @@ body {
   }
 
   .menu-section {
-    grid-template-columns: repeat(2, minmax(300px, 420px));
-    justify-content: center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
     align-items: start;
+    max-width: 1220px;
+    margin: 0 auto;
+    gap: 18px;
   }
 
   .product-card {
     flex-direction: row;
-    min-height: 172px;
-    max-width: 420px;
+    min-height: 196px;
+    max-width: none;
     width: 100%;
     transform: none !important;
   }
 
   .product-img-container {
-    width: 132px;
-    height: 132px;
+    width: clamp(148px, 14vw, 178px);
+    height: clamp(148px, 14vw, 178px);
     aspect-ratio: 1 / 1;
   }
 
   .product-action {
-    right: 18px;
-    bottom: 14px;
+    right: 16px;
+    bottom: 16px;
     left: auto;
     transform: none;
   }
