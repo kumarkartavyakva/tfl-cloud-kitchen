@@ -880,6 +880,10 @@ body:not(.light-theme) .customer-sync-status.is-warning {
   font-size: 0.85rem;
 }
 
+.receipt-primary-actions {
+  margin-top: var(--space-md);
+}
+
 .whatsapp-verification-box {
   margin-top: var(--space-md);
   border: 1px solid var(--color-warning);
