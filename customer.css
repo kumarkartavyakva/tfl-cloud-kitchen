@@ -884,6 +884,10 @@ body:not(.light-theme) .customer-sync-status.is-warning {
   margin-top: var(--space-md);
 }
 
+.receipt-order-actions {
+  margin-top: var(--space-md);
+}
+
 .whatsapp-verification-box {
   margin-top: var(--space-md);
   border: 1px solid var(--color-warning);

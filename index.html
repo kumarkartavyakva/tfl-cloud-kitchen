@@ -267,6 +267,15 @@
         <!-- Rendered dynamically by JS -->
       </div>
 
+      <div class="receipt-actions receipt-order-actions">
+        <button class="btn btn-danger" onclick="startNewOrder()">
+          <i data-lucide="plus-circle"></i> Start New Order
+        </button>
+        <button class="btn btn-success" onclick="closeReceiptModal()">
+          <i data-lucide="edit-3"></i> Add / Modify Items
+        </button>
+      </div>
+
       <div class="receipt-primary-actions">
         <button class="btn btn-primary" style="width: 100%;" onclick="sendOrderWhatsApp()">
           <i data-lucide="message-square"></i> Send Order to Restaurant WhatsApp
@@ -287,12 +296,6 @@
         </button>
         <button class="btn btn-secondary" onclick="downloadReceiptPDF()">
           <i data-lucide="download"></i> Download PDF
-        </button>
-        <button class="btn btn-success" onclick="closeReceiptModal()" style="grid-column: span 2;">
-          <i data-lucide="edit-3"></i> Add / Modify Items
-        </button>
-        <button class="btn btn-danger" onclick="startNewOrder()" style="grid-column: span 2;">
-          <i data-lucide="plus-circle"></i> Start New Order
         </button>
       </div>
     </div>
