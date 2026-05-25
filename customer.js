@@ -481,7 +481,7 @@ function handleProductDecrement(productId) {
         // Clamp condiment quantities in the active order to the new product quantity
         const newQty = items[index].quantity;
         (items[index].condiments || []).forEach(c => {
-          if (typeof c === 'object' && c !== null) {
+          if (isFreeCondiment(c)) {
             if (c.quantity > newQty) {
               c.quantity = newQty;
             }
@@ -521,6 +521,10 @@ function findLastCartIndexByProductId(productId) {
   return -1;
 }
 
+function isFreeCondiment(condiment) {
+  return typeof condiment === 'object' && condiment !== null && (Number(condiment.price) || 0) <= 0;
+}
+
 // Helper functions for customization modal quantity control
 function adjustAddonProductQty(offset) {
   const qtyEl = document.getElementById("addon-item-qty");
@@ -533,6 +537,8 @@ function adjustAddonProductQty(offset) {
   // Clamp all condiment quantities to the new limit
   const qtySpans = document.querySelectorAll("#addons-checkboxes-container .add-btn-qty");
   qtySpans.forEach(span => {
+    const price = parseFloat(span.getAttribute("data-price")) || 0;
+    if (price > 0) return;
     let condQty = parseInt(span.innerText) || 0;
     if (condQty > currentQty) {
       span.innerText = currentQty;
@@ -546,13 +552,14 @@ function adjustCondimentQty(condName, offset) {
   if (!span) return;
   
   const productQtyEl = document.getElementById("addon-item-qty");
-  const maxQty = productQtyEl ? (parseInt(productQtyEl.innerText) || 1) : 1;
+  const maxFreeQty = productQtyEl ? (parseInt(productQtyEl.innerText) || 1) : 1;
+  const price = parseFloat(span.getAttribute("data-price")) || 0;
   
   let currentQty = parseInt(span.innerText) || 0;
   currentQty += offset;
   
   if (currentQty < 0) currentQty = 0;
-  if (currentQty > maxQty) currentQty = maxQty;
+  if (price <= 0 && currentQty > maxFreeQty) currentQty = maxFreeQty;
   
   span.innerText = currentQty;
 }
@@ -874,7 +881,7 @@ function updateCartQty(index, offset) {
     const newQty = cart[index].quantity;
     if (cart[index].condiments) {
       cart[index].condiments.forEach(c => {
-        if (typeof c === 'object' && c !== null) {
+        if (isFreeCondiment(c)) {
           if (c.quantity > newQty) {
             c.quantity = newQty;
           }
