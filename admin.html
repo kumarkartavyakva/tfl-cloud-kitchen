@@ -668,7 +668,14 @@ with check (bucket_id = 'product-images');</pre>
         </div>
         <div class="form-group">
           <label class="form-label" for="sb-logo">Sub-Brand Logo (Emoji or Image URL) *</label>
-          <input type="text" id="sb-logo" class="form-control" required placeholder="🥞 or https://example.com/logo.png">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="sb-logo" class="form-control" required placeholder="🥞 or https://example.com/logo.png">
+            <label class="btn btn-secondary" style="white-space: nowrap; cursor: pointer; margin: 0;">
+              <i data-lucide="upload" style="width: 14px; height: 14px;"></i> Upload
+              <input type="file" accept="image/*" style="display: none;" onchange="handleAdminImageUpload(this, 'sb-logo', 'sb-logo-status', { maxWidth: 500, maxHeight: 500, quality: 0.84, prefix: 'subbrand' })">
+            </label>
+          </div>
+          <div id="sb-logo-status" style="font-size: 0.72rem; color: var(--color-success); margin-top: 4px; display: none;"></div>
         </div>
         <div class="form-row">
           <div class="form-group">

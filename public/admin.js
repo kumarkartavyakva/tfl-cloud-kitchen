@@ -1297,6 +1297,12 @@ function renderSubBrandsTable() {
 }
 
 function openSubBrandModal(subBrandId = null) {
+  const logoStatus = document.getElementById("sb-logo-status");
+  if (logoStatus) {
+    logoStatus.style.display = "none";
+    logoStatus.innerText = "";
+  }
+
   if (subBrandId) {
     const sb = TFL_DB.getSubBrands().find(s => s.id === subBrandId);
     document.getElementById("subbrand-modal-title").innerText = "Modify Sub-Brand";
