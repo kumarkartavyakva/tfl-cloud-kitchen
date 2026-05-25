@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tfl-cache-v38';
+const CACHE_NAME = 'tfl-cache-v39';
 const ASSETS_TO_CACHE = [
   './',
   './admin',
@@ -12,8 +12,6 @@ const ASSETS_TO_CACHE = [
   './customer.js',
   './admin.js',
   './manifest.json',
-  './favicon.png',
-  './apple-touch-icon.png',
   './tfl_logo.png',
   './tfl_hero.png',
   'https://unpkg.com/lucide@latest',
