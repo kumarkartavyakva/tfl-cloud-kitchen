@@ -1236,6 +1236,7 @@ function recalculateReceiptOrderTotals(order) {
 function formatWhatsAppNumber(phone) {
   if (!phone) return '';
   let clean = phone.replace(/\D/g, '');
+  if (clean === "919999999999" || clean === "9999999999") return "";
   if (clean.length === 10) {
     clean = "91" + clean;
   }

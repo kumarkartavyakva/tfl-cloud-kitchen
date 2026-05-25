@@ -5,9 +5,9 @@ const TFL_RUNTIME_CONFIG = typeof window !== "undefined" && window.TFL_CONFIG ? 
 const DEFAULT_SETTINGS = {
   restaurantName: "The Food Lab",
   tagline: "Lab Tested Deliciousness",
-  // Change your numbers here (include country code without + sign, e.g. 919999999999 for India)
-  whatsappNumber: "919999999999", 
-  supportNumber: "919999999999",
+  // Change your numbers in Admin > Settings (include country code without + sign, e.g. 919876543210 for India)
+  whatsappNumber: "",
+  supportNumber: "",
   // Change your UPI ID and QR code here
   upiId: "tfl@upi", 
   qrImageUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg",
