@@ -1021,3 +1021,74 @@ const TFL_DB = {
 
 // Initialize DB immediately
 TFL_DB.init();
+
+let deferredPwaInstallPrompt = null;
+
+function isPwaStandalone() {
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+function isIosDevice() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function updatePwaInstallButton() {
+  const installBtn = document.getElementById("pwa-install-btn");
+  if (!installBtn) return;
+
+  const canInstall = Boolean(deferredPwaInstallPrompt);
+  const showIosHint = isIosDevice() && !isPwaStandalone();
+  installBtn.hidden = isPwaStandalone() || (!canInstall && !showIosHint);
+}
+
+async function handlePwaInstallClick() {
+  const installBtn = document.getElementById("pwa-install-btn");
+
+  if (isIosDevice() && !deferredPwaInstallPrompt) {
+    TFL_DB.showToast("On iPhone, tap Share, then Add to Home Screen.", "info");
+    return;
+  }
+
+  if (!deferredPwaInstallPrompt) {
+    TFL_DB.showToast("Install is available from your browser menu on this device.", "info");
+    updatePwaInstallButton();
+    return;
+  }
+
+  if (installBtn) installBtn.disabled = true;
+  deferredPwaInstallPrompt.prompt();
+  const choiceResult = await deferredPwaInstallPrompt.userChoice;
+  deferredPwaInstallPrompt = null;
+  if (installBtn) installBtn.disabled = false;
+  updatePwaInstallButton();
+
+  if (choiceResult.outcome === "accepted") {
+    TFL_DB.showToast("App installed. Future visits will open faster.", "success");
+  }
+}
+
+function initPwaInstallButton() {
+  const installBtn = document.getElementById("pwa-install-btn");
+  if (!installBtn) return;
+
+  installBtn.addEventListener("click", handlePwaInstallClick);
+  updatePwaInstallButton();
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredPwaInstallPrompt = event;
+  updatePwaInstallButton();
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredPwaInstallPrompt = null;
+  updatePwaInstallButton();
+  TFL_DB.showToast("The Food Lab app is installed.", "success");
+});
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPwaInstallButton);
+} else {
+  initPwaInstallButton();
+}
