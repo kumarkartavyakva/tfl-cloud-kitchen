@@ -55,12 +55,34 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html,
+body,
+#__next {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   overflow-x: hidden;
+  min-width: 0;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, .brand-font {
@@ -606,4 +628,3 @@ body.light-theme .theme-toggle-btn {
     padding: 20px;
   }
 }
-
