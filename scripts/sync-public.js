@@ -14,9 +14,12 @@ const files = [
   "service-worker.js",
   "favicon.ico",
   "favicon.png",
+  "favicon-32.png",
   "apple-touch-icon.png",
-  "tfl-app-icon-192.png",
-  "tfl-app-icon-512.png",
+  "tfl-app-icon-v43-192.png",
+  "tfl-app-icon-v43-512.png",
+  "tfl-maskable-icon-v43-192.png",
+  "tfl-maskable-icon-v43-512.png",
   "tfl_logo.png",
   "tfl_hero.png"
 ];
