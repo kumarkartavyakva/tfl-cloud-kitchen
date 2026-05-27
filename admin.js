@@ -1382,16 +1382,26 @@ async function handleSubBrandSubmit(event) {
   const logo = document.getElementById("sb-logo").value.trim();
   const sort = parseInt(document.getElementById("sb-sort").value) || 99;
   const visible = document.getElementById("sb-visible").checked;
+  const nextId = TFL_DB.makeSubBrandId ? TFL_DB.makeSubBrandId(name) : name.toLowerCase().replace(/[^a-z0-9]+/g, "");
   
   const subbrands = TFL_DB.getSubBrands();
   
   if (id) {
     const index = subbrands.findIndex(s => s.id === id);
-    subbrands[index] = { ...subbrands[index], name, logo, sortOrder: sort, visible };
+    if (index === -1) {
+      TFL_DB.showToast("Sub-brand could not be found. Please refresh and try again.", "error");
+      return;
+    }
+    const previousId = subbrands[index]?.id;
+    subbrands[index] = { ...subbrands[index], id: nextId, name, logo, sortOrder: sort, visible };
+    if (previousId && previousId !== nextId) {
+      const products = TFL_DB.getProducts().map(product => (
+        product.category === previousId ? { ...product, category: nextId } : product
+      ));
+      TFL_DB.saveProducts(products);
+    }
   } else {
-    // Generate clean URL ID
-    const newId = name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
-    subbrands.push({ id: newId, name, logo, sortOrder: sort, visible });
+    subbrands.push({ id: nextId, name, logo, sortOrder: sort, visible });
   }
   
   TFL_DB.saveSubBrands(subbrands);

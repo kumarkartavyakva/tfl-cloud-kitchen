@@ -460,9 +460,45 @@ const TFL_DB = {
     this.initRealtimeSubscription();
   },
 
+  makeSubBrandId(name) {
+    return String(name || "")
+      .trim()
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "")
+      || `subbrand${Date.now()}`;
+  },
+
+  normalizeSubBrandIds(subbrands) {
+    if (!Array.isArray(subbrands)) return subbrands;
+    const usedIds = new Set();
+    return subbrands.map(subbrand => {
+      if (!subbrand) return subbrand;
+      const isParathaverse = String(subbrand.name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "") === "parathaverse";
+      let nextId = isParathaverse ? "parathaverse" : subbrand.id;
+      if (!nextId) nextId = this.makeSubBrandId(subbrand.name);
+      if (usedIds.has(nextId)) {
+        nextId = `${nextId}${subbrand.sortOrder || usedIds.size + 1}`;
+      }
+      usedIds.add(nextId);
+      return { ...subbrand, id: nextId };
+    });
+  },
+
+  normalizeProductCategory(product) {
+    if (!product) return product;
+    const subbrands = this.normalizeSubBrandIds(this.getLocal("subbrands", DEFAULT_SUBBRANDS)) || [];
+    const parathaverse = subbrands.find(s => String(s.name || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "") === "parathaverse");
+    if (parathaverse && product.category === "drinks") {
+      return { ...product, category: parathaverse.id };
+    }
+    return product;
+  },
+
   ensureParathaOnionFilling(products) {
     if (!Array.isArray(products)) return products;
     return products.map(product => {
+      product = this.normalizeProductCategory(product);
       if (!product || product.category !== "project-paratha") return product;
       const condiments = Array.isArray(product.condiments) ? product.condiments : [];
       const hasOnionFilling = condiments.some(cond => {
@@ -480,8 +516,8 @@ const TFL_DB = {
   getProducts() { return this.ensureParathaOnionFilling(this.getLocal("products", DEFAULT_PRODUCTS)); },
   saveProducts(products) { this.setLocal("products", this.ensureParathaOnionFilling(products)); },
 
-  getSubBrands() { return this.getLocal("subbrands", DEFAULT_SUBBRANDS); },
-  saveSubBrands(subbrands) { this.setLocal("subbrands", subbrands); },
+  getSubBrands() { return this.normalizeSubBrandIds(this.getLocal("subbrands", DEFAULT_SUBBRANDS)); },
+  saveSubBrands(subbrands) { this.setLocal("subbrands", this.normalizeSubBrandIds(subbrands)); },
 
   getOrders() { return this.getLocal("orders", []); },
   saveOrders(orders) { this.setLocal("orders", orders); },
