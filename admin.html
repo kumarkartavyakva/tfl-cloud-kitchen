@@ -665,14 +665,15 @@ with check (bucket_id = 'product-images');</pre>
             <!-- JS populated radio option groups -->
           </div>
           <div class="custom-choice-row">
-            <input type="text" id="custom-choice-group-name" class="form-control" placeholder="Group name e.g. Spice Level">
-            <input type="text" id="custom-choice-options" class="form-control" placeholder="Options e.g. Spicy, Less Spicy">
+            <input type="text" id="custom-choice-group-name" class="form-control" placeholder="Radio title e.g. Spice Level">
+            <input type="text" id="custom-choice-option-1" class="form-control" placeholder="Option 1 e.g. Spicy">
+            <input type="text" id="custom-choice-option-2" class="form-control" placeholder="Option 2 e.g. Less Spicy">
             <button type="button" class="btn btn-secondary" onclick="addChoiceGroupOption()">
               <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
-              Add
+              Add Radio
             </button>
           </div>
-          <p class="form-hint">Use this for one-choice options like Spicy/Less Spicy or Boneless/With Bones.</p>
+          <p class="form-hint">Use this for one-choice options. After adding, you can add more options inside the radio group.</p>
         </div>
       </div>
       <div class="modal-footer">

@@ -1170,7 +1170,8 @@ function openProductModal(productId = null) {
   document.getElementById("custom-condiment-name").value = "";
   document.getElementById("custom-condiment-price").value = 0;
   document.getElementById("custom-choice-group-name").value = "";
-  document.getElementById("custom-choice-options").value = "";
+  document.getElementById("custom-choice-option-1").value = "";
+  document.getElementById("custom-choice-option-2").value = "";
   const choiceGroupsList = document.getElementById("product-choice-groups-list");
   choiceGroupsList.innerHTML = "";
   (product?.optionGroups || product?.choiceGroups || []).forEach(group => renderChoiceGroupOption(group.name, group.options || group.choices || []));
@@ -1252,9 +1253,9 @@ async function handleProductSubmit(event) {
     return { name, price };
   });
   const optionGroups = Array.from(document.querySelectorAll("#product-choice-groups-list .choice-group-card")).map(card => ({
-    name: card.getAttribute("data-group-name") || "",
-    options: (card.getAttribute("data-options") || "").split("|").map(option => option.trim()).filter(Boolean)
-  })).filter(group => group.name && group.options.length > 0);
+    name: card.querySelector(".choice-group-title-input")?.value.trim() || "",
+    options: Array.from(card.querySelectorAll(".choice-option-input")).map(input => input.value.trim()).filter(Boolean)
+  })).filter(group => group.name && group.options.length >= 2);
   
   const products = TFL_DB.getProducts();
   
@@ -1938,7 +1939,7 @@ function renderChoiceGroupOption(name, options) {
   if (!cleanName || cleanOptions.length === 0) return;
 
   const exists = Array.from(listDiv.querySelectorAll(".choice-group-card"))
-    .some(card => (card.getAttribute("data-group-name") || "").trim().toLowerCase() === cleanName.toLowerCase());
+    .some(card => (card.querySelector(".choice-group-title-input")?.value || "").trim().toLowerCase() === cleanName.toLowerCase());
   if (exists) {
     TFL_DB.showToast("This radio group already exists for this item.", "warning");
     return;
@@ -1946,39 +1947,71 @@ function renderChoiceGroupOption(name, options) {
 
   const card = document.createElement("div");
   card.className = "choice-group-card";
-  card.setAttribute("data-group-name", cleanName);
-  card.setAttribute("data-options", cleanOptions.join("|"));
 
   const header = document.createElement("div");
   header.className = "choice-group-card-header";
 
-  const title = document.createElement("div");
-  title.className = "choice-group-card-title";
-  title.innerText = cleanName;
+  const title = document.createElement("input");
+  title.type = "text";
+  title.className = "form-control choice-group-title-input";
+  title.value = cleanName;
+  title.placeholder = "Radio title";
 
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";
   removeBtn.className = "btn btn-secondary";
   removeBtn.style.padding = "0.35rem 0.6rem";
-  removeBtn.innerText = "Remove";
+  removeBtn.innerText = "Delete";
   removeBtn.onclick = () => card.remove();
 
-  const optionsText = document.createElement("div");
-  optionsText.className = "choice-group-card-options";
-  optionsText.innerText = cleanOptions.join(" / ");
+  const optionsEditor = document.createElement("div");
+  optionsEditor.className = "choice-options-editor";
+  cleanOptions.forEach(option => appendChoiceOptionInput(optionsEditor, option));
+
+  const addOptionBtn = document.createElement("button");
+  addOptionBtn.type = "button";
+  addOptionBtn.className = "btn btn-secondary";
+  addOptionBtn.style.marginTop = "8px";
+  addOptionBtn.style.width = "fit-content";
+  addOptionBtn.innerText = "Add Option";
+  addOptionBtn.onclick = () => appendChoiceOptionInput(optionsEditor, "");
 
   header.appendChild(title);
   header.appendChild(removeBtn);
   card.appendChild(header);
-  card.appendChild(optionsText);
+  card.appendChild(optionsEditor);
+  card.appendChild(addOptionBtn);
   listDiv.appendChild(card);
+}
+
+function appendChoiceOptionInput(container, value = "") {
+  const row = document.createElement("div");
+  row.className = "choice-option-editor-row";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "form-control choice-option-input";
+  input.value = value;
+  input.placeholder = `Radio option ${container.querySelectorAll(".choice-option-input").length + 1}`;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "mini-delete-btn";
+  deleteBtn.setAttribute("aria-label", "Delete radio option");
+  deleteBtn.innerHTML = "&times;";
+  deleteBtn.onclick = () => row.remove();
+
+  row.appendChild(input);
+  row.appendChild(deleteBtn);
+  container.appendChild(row);
 }
 
 function addChoiceGroupOption() {
   const groupInput = document.getElementById("custom-choice-group-name");
-  const optionsInput = document.getElementById("custom-choice-options");
+  const optionOneInput = document.getElementById("custom-choice-option-1");
+  const optionTwoInput = document.getElementById("custom-choice-option-2");
   const groupName = (groupInput?.value || "").trim();
-  const options = (optionsInput?.value || "").split(",").map(option => option.trim()).filter(Boolean);
+  const options = [optionOneInput?.value || "", optionTwoInput?.value || ""].map(option => option.trim()).filter(Boolean);
 
   if (!groupName) {
     TFL_DB.showToast("Enter a radio group name first.", "warning");
@@ -1986,14 +2019,15 @@ function addChoiceGroupOption() {
     return;
   }
   if (options.length < 2) {
-    TFL_DB.showToast("Add at least two options separated by commas.", "warning");
-    optionsInput?.focus();
+    TFL_DB.showToast("Add at least option 1 and option 2.", "warning");
+    optionOneInput?.focus();
     return;
   }
 
   renderChoiceGroupOption(groupName, options);
   if (groupInput) groupInput.value = "";
-  if (optionsInput) optionsInput.value = "";
+  if (optionOneInput) optionOneInput.value = "";
+  if (optionTwoInput) optionTwoInput.value = "";
 }
 
 function compressImage(file, maxWidth, maxHeight, quality, outputMimeType = "image/webp") {
