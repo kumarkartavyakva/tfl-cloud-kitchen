@@ -740,6 +740,37 @@ body:not(.light-theme) .customer-sync-status.is-warning {
   gap: var(--space-md);
 }
 
+.choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.choice-group-title {
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.choice-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.choice-option-row input {
+  accent-color: var(--color-primary);
+}
+
 .condiments-footer {
   padding: var(--space-lg);
   border-top: 1px solid var(--color-border);

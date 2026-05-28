@@ -1166,6 +1166,11 @@ function openProductModal(productId = null) {
 
   document.getElementById("custom-condiment-name").value = "";
   document.getElementById("custom-condiment-price").value = 0;
+  document.getElementById("custom-choice-group-name").value = "";
+  document.getElementById("custom-choice-options").value = "";
+  const choiceGroupsList = document.getElementById("product-choice-groups-list");
+  choiceGroupsList.innerHTML = "";
+  (product?.optionGroups || product?.choiceGroups || []).forEach(group => renderChoiceGroupOption(group.name, group.options || group.choices || []));
   
   if (productId) {
     // Edit Mode
@@ -1241,6 +1246,10 @@ async function handleProductSubmit(event) {
     const price = priceInput ? (parseFloat(priceInput.value) || 0) : 0;
     return { name, price };
   });
+  const optionGroups = Array.from(document.querySelectorAll("#product-choice-groups-list .choice-group-card")).map(card => ({
+    name: card.getAttribute("data-group-name") || "",
+    options: (card.getAttribute("data-options") || "").split("|").map(option => option.trim()).filter(Boolean)
+  })).filter(group => group.name && group.options.length > 0);
   
   const products = TFL_DB.getProducts();
   
@@ -1262,14 +1271,15 @@ async function handleProductSubmit(event) {
       price,
       veg,
       bestseller,
-      condiments
+      condiments,
+      optionGroups
     };
   } else {
     // Add Product
     const newId = "p-" + Date.now();
     products.push({
       id: newId,
-      name, description: desc, category, image, costPrice: cost, price, veg, bestseller, condiments,
+      name, description: desc, category, image, costPrice: cost, price, veg, bestseller, condiments, optionGroups,
       inStock: true
     });
   }
@@ -1888,6 +1898,72 @@ function addCustomCondimentOption() {
   listDiv.appendChild(label);
   if (nameInput) nameInput.value = "";
   if (priceInput) priceInput.value = 0;
+}
+
+function renderChoiceGroupOption(name, options) {
+  const listDiv = document.getElementById("product-choice-groups-list");
+  if (!listDiv || !name || !Array.isArray(options) || options.length === 0) return;
+  const cleanName = String(name).trim();
+  const cleanOptions = Array.from(new Set(options.map(option => String(option).trim()).filter(Boolean)));
+  if (!cleanName || cleanOptions.length === 0) return;
+
+  const exists = Array.from(listDiv.querySelectorAll(".choice-group-card"))
+    .some(card => (card.getAttribute("data-group-name") || "").trim().toLowerCase() === cleanName.toLowerCase());
+  if (exists) {
+    TFL_DB.showToast("This radio group already exists for this item.", "warning");
+    return;
+  }
+
+  const card = document.createElement("div");
+  card.className = "choice-group-card";
+  card.setAttribute("data-group-name", cleanName);
+  card.setAttribute("data-options", cleanOptions.join("|"));
+
+  const header = document.createElement("div");
+  header.className = "choice-group-card-header";
+
+  const title = document.createElement("div");
+  title.className = "choice-group-card-title";
+  title.innerText = cleanName;
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "btn btn-secondary";
+  removeBtn.style.padding = "0.35rem 0.6rem";
+  removeBtn.innerText = "Remove";
+  removeBtn.onclick = () => card.remove();
+
+  const optionsText = document.createElement("div");
+  optionsText.className = "choice-group-card-options";
+  optionsText.innerText = cleanOptions.join(" / ");
+
+  header.appendChild(title);
+  header.appendChild(removeBtn);
+  card.appendChild(header);
+  card.appendChild(optionsText);
+  listDiv.appendChild(card);
+}
+
+function addChoiceGroupOption() {
+  const groupInput = document.getElementById("custom-choice-group-name");
+  const optionsInput = document.getElementById("custom-choice-options");
+  const groupName = (groupInput?.value || "").trim();
+  const options = (optionsInput?.value || "").split(",").map(option => option.trim()).filter(Boolean);
+
+  if (!groupName) {
+    TFL_DB.showToast("Enter a radio group name first.", "warning");
+    groupInput?.focus();
+    return;
+  }
+  if (options.length < 2) {
+    TFL_DB.showToast("Add at least two options separated by commas.", "warning");
+    optionsInput?.focus();
+    return;
+  }
+
+  renderChoiceGroupOption(groupName, options);
+  if (groupInput) groupInput.value = "";
+  if (optionsInput) optionsInput.value = "";
 }
 
 function compressImage(file, maxWidth, maxHeight, quality, outputMimeType = "image/webp") {

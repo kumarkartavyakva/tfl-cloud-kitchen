@@ -659,6 +659,21 @@ with check (bucket_id = 'product-images');</pre>
           </div>
           <p class="form-hint">Keep price 0 for free add-ons. Paid add-ons can use any price.</p>
         </div>
+        <div class="form-group">
+          <label class="form-label">Radio Choice Groups</label>
+          <div class="choice-groups-list" id="product-choice-groups-list">
+            <!-- JS populated radio option groups -->
+          </div>
+          <div class="custom-choice-row">
+            <input type="text" id="custom-choice-group-name" class="form-control" placeholder="Group name e.g. Spice Level">
+            <input type="text" id="custom-choice-options" class="form-control" placeholder="Options e.g. Spicy, Less Spicy">
+            <button type="button" class="btn btn-secondary" onclick="addChoiceGroupOption()">
+              <i data-lucide="plus" style="width: 14px; height: 14px;"></i>
+              Add
+            </button>
+          </div>
+          <p class="form-hint">Use this for one-choice options like Spicy/Less Spicy or Boneless/With Bones.</p>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>

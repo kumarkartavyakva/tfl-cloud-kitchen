@@ -574,14 +574,53 @@ function openAddonsModal(product) {
   
   const subtitleEl = document.getElementById("addon-item-subtitle");
   const condiments = product.condiments || [];
+  const optionGroups = product.optionGroups || product.choiceGroups || [];
   
-  if (condiments.length > 0) {
-    if (subtitleEl) subtitleEl.innerText = "Choose optional add-ons";
+  if (condiments.length > 0 || optionGroups.length > 0) {
+    if (subtitleEl) subtitleEl.innerText = "Choose options and add-ons";
     listContainer.style.display = "flex";
   } else {
     if (subtitleEl) subtitleEl.innerText = "Select quantity";
     listContainer.style.display = "none";
   }
+
+  optionGroups.forEach((group, groupIndex) => {
+    const groupName = group.name || `Option ${groupIndex + 1}`;
+    const options = group.options || group.choices || [];
+    if (!Array.isArray(options) || options.length === 0) return;
+
+    const groupWrap = document.createElement("div");
+    groupWrap.className = "choice-group";
+    const radioName = `choice-${product.id}-${groupIndex}`;
+
+    const title = document.createElement("div");
+    title.className = "choice-group-title";
+    title.innerText = groupName;
+    groupWrap.appendChild(title);
+
+    options.forEach((option, optionIndex) => {
+      const optionText = String(option).trim();
+      if (!optionText) return;
+      const label = document.createElement("label");
+      label.className = "choice-option-row";
+
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = radioName;
+      radio.value = optionText;
+      radio.setAttribute("data-group", groupName);
+      radio.checked = optionIndex === 0;
+
+      const span = document.createElement("span");
+      span.innerText = optionText;
+
+      label.appendChild(radio);
+      label.appendChild(span);
+      groupWrap.appendChild(label);
+    });
+
+    listContainer.appendChild(groupWrap);
+  });
   
   condiments.forEach(cond => {
     const cName = typeof cond === 'object' ? cond.name : cond;
@@ -619,6 +658,21 @@ function openAddonsModal(product) {
     
     const condimentSpans = document.querySelectorAll("#addons-checkboxes-container .add-btn-qty");
     const selectedCondiments = [];
+    const selectedChoices = document.querySelectorAll("#addons-checkboxes-container .choice-option-row input[type='radio']:checked");
+    selectedChoices.forEach(radio => {
+      const groupName = radio.getAttribute("data-group") || "Option";
+      const choiceName = radio.value;
+      if (choiceName) {
+        selectedCondiments.push({
+          name: `${groupName}: ${choiceName}`,
+          price: 0,
+          quantity: 1,
+          type: "choice",
+          group: groupName,
+          choice: choiceName
+        });
+      }
+    });
     
     condimentSpans.forEach(span => {
       const qty = parseInt(span.innerText) || 0;
