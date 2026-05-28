@@ -386,6 +386,7 @@
 .modal-body {
   padding: var(--space-lg);
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1 1 auto;
   min-height: 0;
 }
@@ -442,12 +443,54 @@
 /* Condiments selector grid */
 .condiments-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--space-sm);
   border: 1px solid var(--color-border);
   padding: var(--space-md);
   border-radius: var(--radius-md);
   background-color: rgba(0, 0, 0, 0.15);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.condiments-grid .checkbox-label {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-width: 0;
+  margin-bottom: 0 !important;
+  padding: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 8px;
+}
+
+.condiments-grid .checkbox-label > div:first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.condiments-grid .checkbox-label > div:first-child span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+
+.condiments-grid .checkbox-label > div:last-child {
+  display: grid !important;
+  grid-template-columns: auto 56px 24px;
+  align-items: center !important;
+  gap: 4px !important;
+  min-width: 0;
+}
+
+.condiments-grid .checkbox-label > div:last-child .form-control {
+  width: 56px !important;
+  min-width: 0;
+  height: 32px !important;
+  padding: 2px 6px !important;
+  margin: 0 !important;
 }
 
 .custom-condiment-row {
@@ -527,6 +570,7 @@
 .mini-delete-btn {
   width: 24px;
   height: 24px;
+  flex: 0 0 24px;
   border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 999px;
   background: rgba(239, 68, 68, 0.1);
